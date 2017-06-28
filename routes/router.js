@@ -55,5 +55,15 @@ router.post("/todo/:itemID/complete", requestMade, function(req, res){
   // res.redirect("/todo");
 });
 
+router.post("/todo/completed/delete", requestMade, function(req,res){
+  console.log("So you want to delete all completed tasks, huh?");
+  models.todos.destroy({
+    where: {
+      complete: true
+    }
+  }).then(function(){
+    res.redirect("/todo");
+  });
+});
 
 module.exports = router;
