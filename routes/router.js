@@ -5,6 +5,13 @@ const models =  require("../models");
 let todos = [];
 let errors = {};
 
+//Middle-ware
+const requestMade = function(req, res, next){
+  todos = [];
+  errors = {};
+  next();
+};
+
 router.get("/", function(req, res){
   res.redirect("/todo");
 });
@@ -18,9 +25,7 @@ router.get("/todo", function(req, res){
   });
 });
 
-router.post("/todo/add", function(req,res){
-  todos = [];
-  errors = {};
+router.post("/todo/add", requestMade, function(req,res){
   req.checkBody("todo", "No text inputted for task").notEmpty();
 
   req.getValidationResult().then(function(result){
@@ -29,7 +34,6 @@ router.post("/todo/add", function(req,res){
         task: req.body.todo,
         complete: false
       };
-      console.log("New task to add to DB: ", newTodo);
       models.todos.create(newTodo).then(function(){
         res.redirect("/todo");
       });
@@ -42,9 +46,14 @@ router.post("/todo/add", function(req,res){
 
 });
 
-router.post("todo/:itemID/complete", function(req, res){
-  console.log("Marking todo item complete...");
-  res.redirect("/todo");
-})
+router.post("/todo/:itemID/complete", requestMade, function(req, res){
+  models.todos.findById(req.params.itemID).then(function(task){
+    task.update({complete: true}).then(function(){
+      res.redirect("/todo");
+    })
+  });
+  // res.redirect("/todo");
+});
+
 
 module.exports = router;

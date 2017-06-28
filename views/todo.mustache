@@ -30,7 +30,7 @@
           {{#todoList}}
           {{^complete}}
           <li>
-            <form class="mark-complete" action="/todo/:{{id}}/complete" method="post">
+            <form class="mark-complete" action="/todo/{{id}}/complete" method="post">
               <button type="submit" name="taskComplete">Mark complete</button>
               <label for="{{task}}">{{task}}</label>
             </form>
