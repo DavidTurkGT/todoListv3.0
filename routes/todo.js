@@ -13,7 +13,7 @@ const requestMade = function(req, res, next){
   next();
 };
 
-router.get("/", function(req, res){
+router.get("/", requestMade, function(req, res){
   models.todos.findAll({order: [["createdAt" ,"DESC"]]}).then((data) => {
     data.forEach((datum) => {
       todos.push(datum.dataValues)
