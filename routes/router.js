@@ -17,8 +17,8 @@ router.get("/", function(req, res){
 });
 
 router.get("/todo", function(req, res){
-  models.todos.findAll().then(function(data){
-    data.forEach(function(datum){
+  models.todos.findAll({order: [["createdAt" ,"DESC"]]}).then((data) => {
+    data.forEach((datum) => {
       todos.push(datum.dataValues)
     });
     res.render("todo", { todoList: todos, error: errors});
@@ -28,15 +28,13 @@ router.get("/todo", function(req, res){
 router.post("/todo/add", requestMade, function(req,res){
   req.checkBody("todo", "No text inputted for task").notEmpty();
 
-  req.getValidationResult().then(function(result){
+  req.getValidationResult().then((result) => {
     if(result.isEmpty()){
       let newTodo = {
         task: req.body.todo,
         complete: false
       };
-      models.todos.create(newTodo).then(function(){
-        res.redirect("/todo");
-      });
+      models.todos.create(newTodo).then(() => { res.redirect("/todo") });
     }
     else{
       errors = result.mapped();
@@ -47,23 +45,13 @@ router.post("/todo/add", requestMade, function(req,res){
 });
 
 router.post("/todo/:itemID/complete", requestMade, function(req, res){
-  models.todos.findById(req.params.itemID).then(function(task){
-    task.update({complete: true}).then(function(){
-      res.redirect("/todo");
-    })
+  models.todos.findById(req.params.itemID).then((task) => {
+    task.update({complete: true}).then(() => {res.redirect("/todo");})
   });
-  // res.redirect("/todo");
 });
 
 router.post("/todo/completed/delete", requestMade, function(req,res){
-  console.log("So you want to delete all completed tasks, huh?");
-  models.todos.destroy({
-    where: {
-      complete: true
-    }
-  }).then(function(){
-    res.redirect("/todo");
-  });
+  models.todos.destroy({ where:{complete:true } }).then(() => {res.redirect("/todo");});
 });
 
 module.exports = router;
